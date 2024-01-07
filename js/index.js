@@ -3,12 +3,12 @@ var arrNhanVien = [];
 
 // ----- Lấy dữ liệu người dùng -----
 function getValueUser() {
-  var arrInput = document.querySelectorAll("form input, form  select");
+  var arrInput = document.querySelectorAll("form input, form select");
 
   var arrError = document.querySelectorAll("form span.sp-thongbao");
 
   //   console.log(arrInput);
-  //   console.log(arrError);
+  console.log(arrError);
 
   var nhanVien = new NhanVien();
   var isValid = true;
@@ -21,7 +21,7 @@ function getValueUser() {
     if (inputId == "tknv") {
       isValid &=
         checkEmptyValue(inputValue, errorId) &&
-        checkMinManValue(inputValue, errorId, 4, 6);
+        checkMinMaxValue(inputValue, errorId, 4, 6);
     } else if (inputId == "name") {
       isValid &=
         checkEmptyValue(inputValue, errorId) &&
@@ -40,12 +40,10 @@ function getValueUser() {
     } else if (inputId == "luongCB") {
       isValid &=
         checkEmptyValue(inputValue, errorId) &&
-        checkMinManValue(inputValue, errorId, 1000000, 20000000) &&
         checkNumber(inputValue, errorId);
     } else if (inputId == "gioLam") {
       isValid &=
         checkEmptyValue(inputValue, errorId) &&
-        checkMinManValue(inputValue, errorId, 80, 200) &&
         checkNumber(inputValue, errorId);
     } else {
       isValid &= checkEmptyValue(inputValue, errorId);
@@ -53,6 +51,7 @@ function getValueUser() {
     var ID = arrInput[i].id;
     nhanVien[ID] = inputValue;
   }
+  console.log(isValid);
   if (isValid) {
     return nhanVien;
   }
@@ -62,11 +61,14 @@ function getValueUser() {
 // ----- Lưu dữ liệu vào mảng -----
 document.getElementById("btnThemNV").onclick = function () {
   var nhanVien = getValueUser();
-  // console.log(nhanVien);
-  arrNhanVien.push(nhanVien);
+  console.log(nhanVien);
+  if (nhanVien) {
+    arrNhanVien.push(nhanVien);
+    document.getElementById("formQLNV").reset();
+    luuDuLieuLocalStorage("arrNhanVien", arrNhanVien);
+    hienThiDuLieu();
+  }
   // console.log(arrNhanVien);
-  document.getElementById("formQLNV").reset();
-  hienThiDuLieu();
 };
 
 // ----- Hiển thị dữ liệu ra bảng -----
@@ -104,8 +106,27 @@ function hienThiDuLieu(arr) {
   }
 }
 
+// ----- Lưu dữ liệu vào localStorage -----
+function luuDuLieuLocalStorage(key, value) {
+  var stringValue = JSON.stringify(value);
+  localStorage.setItem(key, stringValue);
+}
+
+// ----- Lấy dữ liệu đã lưu -----
+function layDuLieuLocalStorage(key) {
+  var dataLocal = localStorage.getItem("arrNhanVien");
+  if (dataLocal) {
+    var convertData = JSON.parse(dataLocal);
+    arrNhanVien = convertData;
+    hienThiDuLieu();
+  } else {
+  }
+}
+layDuLieuLocalStorage();
+
 // ----- Xóa dữ liệu USER -----
 function xoaDuLieuUser(tk) {
+  console.log(tk);
   var index = -1;
   for (var i = 0; i < arrNhanVien.length; i++) {
     if (arrNhanVien[i].tknv == tk) {
@@ -114,11 +135,34 @@ function xoaDuLieuUser(tk) {
   }
   if (index != -1) {
     arrNhanVien.splice(index, 1);
+    luuDuLieuLocalStorage("arrNhanVIen", arrNhanVien);
     hienThiDuLieu();
   }
 }
 
-// ----- Cập nhật dữ liệu USER -----
+// ----- Cập nhật nhân viên -----
+
+function getInfoUser(tk) {
+  console.log(tk);
+  var nhanVienIndex = {};
+  for (var i = 0; i < arrNhanVien.length; i++) {
+    var nhanVien = arrNhanVien[i];
+    if (nhanVien.tknv == tk) {
+      nhanVienIndex = nhanVien;
+    }
+  }
+  var arrInput = document.querySelectorAll("form input, form select");
+  console.log(arrInput);
+  for (var j = 0; j < arrInput.length; j++) {
+    var htmlDom = arrInput[j];
+    var id = htmlDom.id;
+    htmlDom.value = nhanVienIndex[id];
+  }
+  document.getElementById("tknv").readOnly = true;
+}
+
+document.querySelector("btn-waring").onlick = getInfoUser();
+
 function updateValueUser() {
   var nhanVien = getValueUser();
   console.log(nhanVien);
@@ -127,8 +171,10 @@ function updateValueUser() {
       arrNhanVien[i] = nhanVien;
     }
   }
+  luuDuLieuLocalStorage("arrNhanVien", arrNhanVien);
   hienThiDuLieu();
   document.getElementById("formQLNV").reset();
+  document.getElementById("tknv").readOnly = false;
 }
 
 document.getElementById("btnCapNhat").onclick = updateValueUser;

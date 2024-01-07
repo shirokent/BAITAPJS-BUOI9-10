@@ -26,12 +26,16 @@ function NhanVien() {
     var xepLoai = "";
     if (this.gioLam < 160) {
       xepLoai = "Nhân viên trung bình";
+      // return xepLoai;
     } else if (this.gioLam >= 160 && this.gioLam < 176) {
       xepLoai = "Nhân viên khá";
     } else if (this.gioLam >= 176 && this.gioLam < 192) {
       xepLoai = "Nhân viên giỏi";
+      // return xepLoai;
     } else {
       xepLoai = "Nhân viên xuất sắc";
+      // return xepLoai;
     }
+    return xepLoai;
   };
 }

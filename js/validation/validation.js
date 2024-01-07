@@ -29,9 +29,8 @@ function checkNameValue(value, errorId) {
 }
 
 // ----- Check số lượng ký tự tối thiểu và tối đa -----
-function checkMinManValue(value, errorId, min, max) {
-  var doDaiKyTu = value.trim(),
-    length;
+function checkMinMaxValue(value, errorId, min, max) {
+  var doDaiKyTu = value.trim().length;
   if (doDaiKyTu >= min && doDaiKyTu <= max) {
     document.getElementById(errorId).innerHTML = "";
     return true;
